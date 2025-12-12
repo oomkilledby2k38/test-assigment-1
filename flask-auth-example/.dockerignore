@@ -1,0 +1,37 @@
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# Virtual environments
+.env
+.venv
+venv/
+ENV/
+
+# Git and docs
+.git
+.gitignore
+README.md
+*.md
+
+# IDE and OS
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
+
+# Tests and scripts
+add_test_users.py
+
+# Docker
+Dockerfile
+.dockerignore
