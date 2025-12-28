@@ -14,14 +14,14 @@
 - name: Run Flask application container
   community.docker.docker_container:
     name: flask-app
-    image: "{{ app_docker_image | default('kirill4goodmopsa/flask-app:latest') }}"
+    image: "{{ app_docker_image | default('kirill4goodmopsa/flask-app') }}:{{ app_docker_tag | default('latest') }}"
     state: started
     restart_policy: always
     env:
       DB_USER: "{{ db_user }}"
       DB_PASSWORD: "{{ db_password }}"
       DB_HOST: "postgres"
-      DB_PORT: "{{ db_port | default('5432') | string }}"
+      DB_PORT: "5432"
       DB_NAME: "{{ db_name }}"
     ports:
       - "{{ app_port }}:5000"

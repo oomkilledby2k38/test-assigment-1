@@ -1,0 +1,55 @@
+---
+- name: Create scripts directory
+  file:
+    path: "{{ scripts_dir }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Copy backup script
+  copy:
+    src: "{{ playbook_dir }}/../../../Scripts/backup.sh"
+    dest: "{{ scripts_dir }}/backup.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Copy healthcheck script
+  copy:
+    src: "{{ playbook_dir }}/../../../Scripts/healthcheck.sh"
+    dest: "{{ scripts_dir }}/healthcheck.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Copy setup script
+  copy:
+    src: "{{ playbook_dir }}/../../../Scripts/setup.sh"
+    dest: "{{ scripts_dir }}/setup.sh"
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create log directory for healthcheck
+  file:
+    path: /var/log
+    state: directory
+    mode: '0755'
+
+- name: Setup cron job for backup (daily at 2 AM)
+  cron:
+    name: "PostgreSQL backup"
+    minute: "{{ backup_cron_minute }}"
+    hour: "{{ backup_cron_hour }}"
+    job: "{{ scripts_dir }}/backup.sh >> /var/log/backup.log 2>&1"
+    user: root
+    state: present
+
+- name: Setup cron job for healthcheck (every 10 minutes)
+  cron:
+    name: "Docker healthcheck"
+    minute: "{{ healthcheck_cron_minute }}"
+    job: "{{ scripts_dir }}/healthcheck.sh"
+    user: root
+    state: present

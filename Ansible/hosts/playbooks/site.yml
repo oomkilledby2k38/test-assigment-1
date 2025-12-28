@@ -1,13 +1,20 @@
 ---
 - name: Full deployment - Common configuration for all hosts
-  hosts: all
+  hosts:  all
   become: true
   gather_facts: true
   tags:
     - common
-    - logging
   roles:
     - common
+
+- name: Logging setup for all VMs
+  hosts: all
+  become: true
+  gather_facts: true
+  tags:
+    - logging
+  roles:
     - logging
 
 - name: Database and Application setup on VM1

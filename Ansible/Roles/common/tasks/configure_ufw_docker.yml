@@ -1,0 +1,54 @@
+---
+- name: Ensure UFW is configured to work with Docker
+  blockinfile:
+    path: /etc/ufw/after.rules
+    marker: "# {mark} ANSIBLE MANAGED DOCKER RULES"
+    insertafter: "# Don't delete these required lines"
+    block: |
+      # Allow Docker container networking
+      *filter
+      :DOCKER-USER - [0:0]
+      
+      # Allow traffic from Docker networks
+      -A DOCKER-USER -s 172.16.0.0/12 -j ACCEPT
+      -A DOCKER-USER -s 192.168.0.0/16 -j ACCEPT
+      
+      # Allow established connections
+      -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+      
+      # Allow loopback
+      -A DOCKER-USER -i lo -j ACCEPT
+      
+      # Return to Docker processing
+      -A DOCKER-USER -j RETURN
+      COMMIT
+    create: yes
+    mode: '0640'
+  notify: reload ufw
+
+- name: Ensure /etc/docker/daemon.json exists
+  file:
+    path: /etc/docker/daemon.json
+    state: touch
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve
+
+- name: Configure Docker to use iptables properly
+  copy:
+    content: |
+      {
+        "iptables": true,
+        "ip-forward": true
+      }
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+  notify: restart docker
+
+- name: Ensure IP forwarding is enabled
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes

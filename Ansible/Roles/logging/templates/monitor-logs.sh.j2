@@ -13,6 +13,7 @@ echo "=== Container Status ==="
 docker ps --format "table {% raw %}{{.Names}}{% endraw %}\t{% raw %}{{.Status}}{% endraw %}\t{% raw %}{{.Ports}}{% endraw %}"
 echo ""
 
+{% if inventory_hostname == 'vm1' %}
 # Check recent Flask app logs for errors
 echo "=== Flask App Recent Errors ==="
 if docker ps | grep -q flask-app; then
@@ -30,17 +31,18 @@ else
     echo "PostgreSQL container not running"
 fi
 echo ""
+{% endif %}
 
-# Check Nginx logs for errors (if on webserver)
+{% if inventory_hostname == 'vm2' %}
+# Check Nginx logs for errors
+echo "=== Nginx Recent Errors ==="
 if docker ps | grep -q nginx; then
-    echo "=== Nginx Recent Errors ==="
     docker logs nginx --tail 50 2>&1 | grep -iE "error|warn" | tail -10
-    echo ""
-elif [ -f /opt/nginx/logs/error.log ]; then
-    echo "=== Nginx Recent Errors ==="
-    tail -20 /opt/nginx/logs/error.log
-    echo ""
+else
+    echo "Nginx container not running"
 fi
+echo ""
+{% endif %}
 
 # Disk space check
 echo "=== Disk Space Usage ==="

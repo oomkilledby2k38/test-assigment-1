@@ -43,7 +43,7 @@
     group: root
     mode: '0755'
 
-- name: Create systemd log service for Docker containers
+- name: Create Docker logs export script for VM1 (app + db)
   copy:
     dest: /usr/local/bin/docker-logs-export.sh
     content: |
@@ -61,12 +61,24 @@
       if docker ps | grep -q postgres; then
         docker logs postgres --tail 1000 > "$LOGDIR/postgres-$DATE.log" 2>&1
       fi
+    mode: '0755'
+  when: inventory_hostname == 'vm1'
+
+- name: Create Docker logs export script for VM2 (nginx)
+  copy:
+    dest: /usr/local/bin/docker-logs-export.sh
+    content: |
+      #!/bin/bash
+      # Export Docker container logs
+      LOGDIR="{{ log_directory }}"
+      DATE=$(date +%Y-%m-%d)
       
       # Nginx logs
       if docker ps | grep -q nginx; then
         docker logs nginx --tail 1000 > "$LOGDIR/nginx-$DATE.log" 2>&1
       fi
     mode: '0755'
+  when: inventory_hostname == 'vm2'
 
 - name: Create cron job for Docker log export
   cron:

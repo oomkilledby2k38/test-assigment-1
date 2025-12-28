@@ -4,5 +4,11 @@
 - name: Include Docker installation
   include_tasks: download_docker.yml
 
+- name: Configure UFW for Docker compatibility
+  include_tasks: configure_ufw_docker.yml
+
 - name: Configure firewall
   include_tasks: firewall.yml
+
+- name: Deploy scripts and configure cron
+  include_tasks: deploy_scripts.yml

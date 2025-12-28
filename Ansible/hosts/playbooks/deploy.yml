@@ -33,13 +33,13 @@
         env:
           DB_USER: "{{ db_user }}"
           DB_PASSWORD: "{{ db_password }}"
-          DB_HOST: "{{ db_host }}"
-          DB_PORT: "{{ db_port | default('5432') }}"
+          DB_HOST: "postgres"
+          DB_PORT: "5432"
           DB_NAME: "{{ db_name }}"
         ports:
           - "{{ app_port }}:5000"
         networks:
-          - name: bridge
+          - name: app_network
 
   handlers:
     - name: restart application

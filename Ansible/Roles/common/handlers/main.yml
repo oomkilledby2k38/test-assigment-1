@@ -6,4 +6,4 @@
 
 - name: reload ufw
   ufw:
-    state: reloaded
+    state: restarted
