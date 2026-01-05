@@ -20,6 +20,7 @@
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
+# ansible_distribution_release - имя релиза дистрибутива, если собраны факты
 - name: Get Ubuntu codename
   command: lsb_release -cs
   register: ubuntu_codename
@@ -46,6 +47,7 @@
     state: started
     enabled: true
 
+# мог быть в Install docker-ce модуле
 - name: Install Docker Module for Python
   apt:
     name: python3-docker

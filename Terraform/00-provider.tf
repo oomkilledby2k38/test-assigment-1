@@ -1,3 +1,5 @@
+# для чего конфиг digital ocean если локальные vm использовались для конфигов ансибла?
+
 terraform {
   required_providers {
     digitalocean = {

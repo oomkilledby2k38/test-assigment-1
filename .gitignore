@@ -6,3 +6,4 @@ Terraform/*.tfvars
 Terraform/crash.log
 Terraform/override.tf
 Terraform/override.tf.json
+/.idea/

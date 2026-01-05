@@ -30,6 +30,7 @@
     port: 52
     proto: udp
 
+# хардкод хоста
 - name: Allow from everywhere from localmachine 
   ufw:
     rule: allow
@@ -59,7 +60,7 @@
     comment: "Allow Docker internal network traffic"
   loop:
     - "172.16.0.0/12"
-    - "192.168.0.0/16"
+    - "192.168.0.0/16" #
 
 - name: Allow established and related connections
   iptables:

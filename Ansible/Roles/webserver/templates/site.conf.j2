@@ -10,7 +10,7 @@ server {
     listen [::]:{{ nginx_http_port | default(80) }} default_server;
     
     server_name {{ hostvars['vm2'].ansible_host | default('_') }};
-    
+    # server_name 192.168.1.187?
 
     return 301 https://$host$request_uri;
 }
@@ -22,7 +22,7 @@ server {
     http2 on;
     
     server_name {{ hostvars[inventory_hostname].ansible_host }};
-    
+    # server_name должен быть под сертификат хост, i.e. webserver.local
  
     ssl_certificate {{ nginx_ssl_cert_path }};
     ssl_certificate_key {{ nginx_ssl_key_path }};

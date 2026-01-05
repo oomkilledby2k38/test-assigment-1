@@ -2,6 +2,8 @@
 # Cleanup old log files
 # Managed by Ansible
 
+# зачем скрипт, если logrotate удаляет старые логи?
+
 LOGDIR="{{ log_directory }}"
 RETENTION_DAYS={{ log_retention_days }}
 

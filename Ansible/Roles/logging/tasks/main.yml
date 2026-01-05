@@ -3,6 +3,7 @@
   ansible.builtin.package:
     name: cron
     state: present
+
 - name: Create log directory
   file:
     path: "{{ log_directory }}"

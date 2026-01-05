@@ -1,2 +1,3 @@
+#
 - name: Download Flask application from Docker Hub
   include_tasks: download_app.yml

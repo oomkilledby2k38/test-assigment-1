@@ -47,6 +47,7 @@
     name: python3-psycopg2
     state: present
 
+# уже настроено с помощью POSTGRES_DB: "{{ db_name }}"
 - name: Create application database
   community.postgresql.postgresql_db:
     name: "{{ db_name }}"
