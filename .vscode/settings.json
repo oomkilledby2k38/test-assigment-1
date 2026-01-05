@@ -1,3 +1,4 @@
+// this path should be ignored for git
 {
     "ansible.python.interpreterPath": "/opt/homebrew/bin/python3.13"
 }

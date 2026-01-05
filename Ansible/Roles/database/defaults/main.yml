@@ -1,5 +1,6 @@
 ---
 # PostgreSQL version
+# где это используется?
 postgres_version: "15"
 
 # PostgreSQL performance tuning

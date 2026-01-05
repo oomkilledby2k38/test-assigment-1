@@ -1,2 +1,3 @@
+# зачем выносить если это единственный скрипт файл?
 - name: Download Postgres
   include_tasks: download_database.yml

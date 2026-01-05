@@ -9,7 +9,7 @@
 
 - name: Copy backup script
   copy:
-    src: "{{ playbook_dir }}/../../../Scripts/backup.sh"
+    src: "{{ playbook_dir }}/../../../Scripts/backup.sh" # странные пути под скрипты, лучше располагать в files папке соответствующей роли
     dest: "{{ scripts_dir }}/backup.sh"
     mode: '0755'
     owner: root
@@ -37,7 +37,7 @@
     state: directory
     mode: '0755'
 
-- name: Setup cron job for backup (daily at 2 AM)
+- name: Setup cron job for backup (daily at 2 AM) # нейминг под статичное значение, но можно изменить переменными
   cron:
     name: "PostgreSQL backup"
     minute: "{{ backup_cron_minute }}"
@@ -46,7 +46,7 @@
     user: root
     state: present
 
-- name: Setup cron job for healthcheck (every 10 minutes)
+- name: Setup cron job for healthcheck (every 10 minutes) #
   cron:
     name: "Docker healthcheck"
     minute: "{{ healthcheck_cron_minute }}"

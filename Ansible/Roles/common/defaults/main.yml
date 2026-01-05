@@ -1,17 +1,19 @@
 ---
 
+# где это используется?
 devops_user: "devops"
 devops_user_shell: "/bin/bash"
 devops_user_groups: []
 
-
+# где это используется?
 firewall_allowed_ports:
   - { port: 22, proto: tcp }
   - { port: 80, proto: tcp }
   - { port: 443, proto: tcp }
   - { port: 53, proto: udp }
 
-
+# обязательный список приложений лучше выносить в vars папку, а опциональные добавлять к списку через переменную
+# где это используется?
 system_packages:
   - vim
   - git

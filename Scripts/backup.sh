@@ -5,6 +5,7 @@
 
 set -e
 
+# хардкод значения
 BACKUP_DIR="/opt/backups"
 RETENTION_DAYS=7
 CONTAINER_NAME="postgres"

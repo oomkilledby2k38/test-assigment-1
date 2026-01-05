@@ -1,38 +1,61 @@
-# Базовые требования 
-1.Ubuntu 24.04 LTS 2 CPUs 2GB RAM 10 GB DISK
-2.Ubuntu 24.04 LTS 2 CPUs 2GB RAM 10 GB DISK
+# Базовые требования
 
-## Создание пользователя 
-sudo adduser devops 
+1. Ubuntu 24.04 LTS 2 CPUs 2GB RAM 10 GB DISK
+2. Ubuntu 24.04 LTS 2 CPUs 2GB RAM 10 GB DISK
+
+## Создание пользователя
+
+```shell
+sudo adduser devops
+```
+
 ## Права sudo
+
+```shell
 sudo vim /etc/sudeoers %devops ALL=(ALL) ALL
-## ufw / iptables 
-sudo ufw enable 
+```
 
+## ufw / iptables
 
-## ufw allow 22 443 ports and etc  
+```shell
+sudo ufw enable
+```
+
+## ufw allow 22 443 ports and etc
+
+```shell
 sudo ufw allow 22/tcp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw allow 52/udp
-sudo ufw allow from 192.168.1.122 to any port 22 ( локальная машина )
-Такие же правила на второй виртуальной машине
-Так как приложение находиться в Docker образе , Docker обходит ufw , поэтому нужно добавить правила в iptables
-devops@server1:~$ sudo iptables -I DOCKER-USER -p tcp --dport 5000 -j DROP
-devops@server1:~$ sudo iptables -I DOCKER-USER -s 192.168.1.137 -p tcp --dport 5000 -j ACCEPT (Вторая локальная машина , где находится nginx)
+sudo ufw allow from 192.168.1.122 to any port 22 # локальная машина
+```
 
+Такие же правила на второй виртуальной машине
+
+Так как приложение находиться в Docker образе, Docker обходит ufw, поэтому нужно добавить правила в iptables
+
+```shell
+devops@server1:~$ sudo iptables -I DOCKER-USER -p tcp --dport 5000 -j DROP
+devops@server1:~$ sudo iptables -I DOCKER-USER -s 192.168.1.137 -p tcp --dport 5000 -j ACCEPT # Вторая локальная машина , где находится nginx
+```
 
 ## Password Authenfication и  Root login
+
+```shell
 sudo nano /etc/ssh/sshd_config
 PasswordAuthentication no
 PermitRootLogin no
 PubkeyAuthentication yes
+```
 
 ## Установка Docker и PostgreSQL
+
 [Docker](https://docs.docker.com/engine/install/)
+
 [PostgreSQL](hub.docker.com/_/postgres/)
 
-```
+```yaml
 services:
   postgres:
     image: postgres:15
@@ -61,9 +84,12 @@ volumes:
 networks:
   app-network:
 ```
+
 ## Flask приложение
-1. git clone 
-2. Dockerfile 
+
+1. git clone
+2. Dockerfile
+
 ```
 #  Builder
 FROM python:3.11-alpine AS builder
@@ -111,6 +137,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "2", "
 ```
 
 3. Окружение .env
+
 ```
 SECRET_KEY=YOUR-SECRET-KEY-HERE
 DB_USER=devops
@@ -119,6 +146,7 @@ DB_HOST=192.168.1.101
 DB_PORT=5432
 DB_NAME=flask
 ```
+
 4. Systemd-service
 
 ```
@@ -157,15 +185,22 @@ KillMode=process
 [Install]
 WantedBy=multi-user.target
 ```
+
 # Установка nginx и проксирование на VM1
+
 ### Структура
+
+```text
 .
 └── nginx
-    ├── conf.d
-    │   └── flask-proxy.conf
-    ├── docker-compose.yaml
-    └── nginx.conf
+├── conf.d
+│ └── flask-proxy.conf
+├── docker-compose.yaml
+└── nginx.conf
+```
+
 ### Docker Compose для nginx
+
 ```
 version: '3.8'
 
@@ -192,7 +227,7 @@ networks:
     
 ```
 
-### Конфиг nginx 
+### Конфиг nginx
 
 ```
 user nginx;
@@ -254,6 +289,7 @@ http {
 }
 
 ```
+
 ### Proxy
 
 ```
@@ -314,6 +350,7 @@ server {
 ```
 
 ### Логирование
+
 ```
 services:
   flask-app:
@@ -324,6 +361,7 @@ services:
     volumes:
       - /opt/flask-logs:/app/logs
 ```
+
 ```
 access_log /var/log/nginx/flask-app-access.log;
 ```
@@ -332,23 +370,29 @@ access_log /var/log/nginx/flask-app-access.log;
 
 Создать файл /etc/logrotate.d/nginx:
 
+```text
 /var/log/nginx/nginx.log {
-        rotate 14
-        daily
-        compress
-        delaycompress
-        missingok
-        notifempty
-        create 660 linuxuser linuxuser }
+    rotate 14
+    daily
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 660 linuxuser linuxuser
+}
+```
 
+[//]: # (дубликат ридми файла из [README.md](Ansible/README.md))
+[//]: # (лучше оставить ссылку на оригинал)
 
 # Ansible Infrastructure Deployment
 
-Этот проект содержит Ansible конфигурацию для автоматического развертывания инфраструктуры на двух виртуальных машинах (VM1 и VM2).
+Этот проект содержит Ansible конфигурацию для автоматического развертывания инфраструктуры на двух виртуальных машинах (
+VM1 и VM2).
 
 ## Структура проекта
 
-```
+```text
 .
 ├── ansible.cfg                
 ├── inventory.yml              
@@ -383,18 +427,21 @@ access_log /var/log/nginx/flask-app-access.log;
 ## Роли
 
 ### 1. common
+
 - Обновление системы
 - Создание пользователя devops
 - Установка Docker
 - Настройка firewall (UFW + iptables)
 
 ### 2. database
+
 - Установка PostgreSQL 15 (через Docker)
 - Создание базы данных и пользователей
 - Настройка доступа через pg_hba.conf
 - Использование зашифрованных паролей из ansible-vault
 
 ### 3. application
+
 - Создание пользователя приложения
 - Создание Python virtual environment
 - Установка Flask приложения
@@ -402,6 +449,7 @@ access_log /var/log/nginx/flask-app-access.log;
 - Установка зависимостей из requirements.txt
 
 ### 4. webserver
+
 - Установка и настройка Nginx
 - Настройка reverse proxy для Flask приложения
 - Настройка логирования и security headers
@@ -418,20 +466,19 @@ access_log /var/log/nginx/flask-app-access.log;
 
 ### Настройка
 
-
 1. **Зашифруйте пароли с помощью ansible-vault**:
+
 ```bash
 
 echo "kirill" > .vault_pass
 
-
 ansible-vault encrypt group_vars/all/vault.yml --vault-password-file .vault_pass
-
 
 ansible-vault edit group_vars/all/vault.yml --vault-password-file .vault_pass
 ```
 
 3. **Добавьте .vault_pass в .gitignore**:
+
 ```bash
 echo ".vault_pass" >> .gitignore
 ```
@@ -439,6 +486,7 @@ echo ".vault_pass" >> .gitignore
 ### Запуск
 
 #### Полное развертывание всей инфраструктуры:
+
 ```bash
 # С файлом пароля
 ansible-playbook site.yml --vault-password-file .vault_pass
@@ -451,11 +499,13 @@ ansible-playbook site.yml --check --vault-password-file .vault_pass
 ```
 
 #### Обновление только приложения:
+
 ```bash
 ansible-playbook deploy.yml --vault-password-file .vault_pass
 ```
 
 #### Запуск конкретной роли:
+
 ```bash
 # Только database роль на VM2
 ansible-playbook site.yml --tags database --limit vm2 --vault-password-file .vault_pass
@@ -485,11 +535,13 @@ docker exec -it postgres psql -U postgres -d appdb
 
 ## Idempotency
 
-Все роли написаны с соблюдением принципа idempotency - повторный запуск playbook не вызывает изменений, если система уже находится в целевом состоянии.
+Все роли написаны с соблюдением принципа idempotency - повторный запуск playbook не вызывает изменений, если система уже
+находится в целевом состоянии.
 
 ## Handlers
 
 Каждая роль использует handlers для перезапуска сервисов только при необходимости:
+
 - **common**: restart docker, reload ufw
 - **database**: restart postgresql
 - **application**: reload systemd, restart application
@@ -498,6 +550,7 @@ docker exec -it postgres psql -U postgres -d appdb
 ## Templates (Jinja2)
 
 Используются шаблоны для конфигурационных файлов:
+
 - PostgreSQL: `postgresql.conf.j2`, `pg_hba.conf.j2`
 - Application: `app.py.j2`, `requirements.txt.j2`, `flask-app.service.j2`
 - Nginx: `nginx.conf.j2`, `site.conf.j2`
@@ -513,6 +566,7 @@ docker exec -it postgres psql -U postgres -d appdb
 ## Troubleshooting
 
 ### Проблема с подключением
+
 ```bash
 # Проверка доступности хостов
 ansible all -m ping --vault-password-file .vault_pass
@@ -522,6 +576,7 @@ ansible-inventory --list -y
 ```
 
 ### Проблема с vault
+
 ```bash
 # Просмотр зашифрованного файла
 ansible-vault view group_vars/all/vault.yml --vault-password-file .vault_pass
@@ -531,6 +586,7 @@ ansible-vault decrypt group_vars/all/vault.yml --vault-password-file .vault_pass
 ```
 
 ### Логи сервисов
+
 ```bash
 # Логи Flask приложения
 sudo journalctl -u flask-app -f

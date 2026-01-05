@@ -11,7 +11,7 @@
       
       # Allow traffic from Docker networks
       -A DOCKER-USER -s 172.16.0.0/12 -j ACCEPT
-      -A DOCKER-USER -s 192.168.0.0/16 -j ACCEPT
+      -A DOCKER-USER -s 192.168.0.0/16 -j ACCEPT # хардкод локальной сети
       
       # Allow established connections
       -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
